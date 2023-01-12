@@ -11,93 +11,91 @@ var board = [
 ]
 
 function doSmth(e) {
-    console.log(e.target.id);
+    if (checkForWin() != 'NE') {
+        return;
+    }
     var button = document.getElementById(e.target.id);
     e.target.id
     var Y0 = e.target.id[3];
     var X0 = e.target.id[4];
 
     if (button.innerHTML != '-1') return;
-    board[Y0 - 1][X0 - 1] = 'O';
+    board[Y0 - 1][X0 - 1] = 'X';
     button.innerHTML = 'X';
     button.style.color="black";
     
-    if (checkForWin('O') == 1) {
-        getMessage('O');
+    // 'X' - X has won
+    // 'O' - O has won
+    // 'TIE' - tie
+    // 0 - game still running
+    var hasWon = checkForWin();
+
+    if (hasWon != 'NE') {
+        getMessage(hasWon);
         return;
     }
 
-    if (checkForWin == 0) {
-        getMessage("TIE")
-    }
+    findBestMove('O');
 
-    findBestMove('X');
-    
-    if (checkForWin('X') == 1) {
-        getMessage('X');
+    hasWon = checkForWin();
+    if (hasWon != 'NE') {
+        getMessage(hasWon);
         return;
     }
 }
 
-function checkForWin(player) {
+function checkForWin() {
     for (var X0 = 0; X0 < 3; X0++) {
-        for (var Y0 = 0; Y0 < 3; Y0++) {
-            if (board[Y0][X0] != player) {
-                break;  
-            }
-            if (Y0 == 2) return 1;
+        if (board[0][X0] == board[1][X0] && board[1][X0] == board[2][X0] && board[1][X0] != '-1') {
+            return board[1][X0];
         }
     }
 
     for (var Y0 = 0; Y0 < 3; Y0++) {
-        for (var X0 = 0; X0 < 3; X0++) {
-            if (board[Y0][X0] != player) {
-                break;
-            }
-            if (X0 == 2) return 1;
+        if (board[Y0][0] == board[Y0][1] && board[Y0][1] == board[Y0][2] && board[Y0][1] != '-1') {
+            return board[Y0][1];
         }
     }
 
-    for (var XY = 0; XY < 3; XY++) {
-        if (board[XY][XY] != player) break;
-        if (XY == 2) return 1;
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[1][1] != '-1') {
+        return board[1][1];
     }
 
-    for (var XY = 0; XY < 3; XY++) {
-        if (board[2 - XY][XY] != player) break;
-        if (XY == 2) return 1;
+    if (board[2][0] == board[1][1] && board[1][1] == board[0][2] && board[1][1] != '-1') {
+        return board[1][1];
     }
 
     for (var X0 = 0; X0 < 3; X0++) {
         for (var Y0 = 0; Y0 < 3; Y0++) {
             if (board[Y0][X0] == '-1') {
-                // NOT ENDED
-                return -1;
+                // Not Ended
+                return 'NE';
             }
         }
     }
-    
-    // ENDED - TIE
-    return 0;
 
+    return 'TIE';
 }
 
+let scores = {
+    'X' : 1,
+    'O' : -1,
+    'TIE': 0
+};
+
 function minimax(isMaximizing, depth) {
-    let player = isMaximizing ? 'X' : 'O';
-    if (checkForWin(player) == 1) {
-        return player == 'X' ? 1 : -1;
+    let result = checkForWin();
+    if (result != 'NE') {
+        return scores[result];
     }
-    if (checkForWin(player) == 0) {
-        return 0;
-    }
-    if (depth >= 8) return 0;
+    // if (depth >= 10) return 0;
 
     if (isMaximizing) {
         let bestScore = -Infinity;
         for (var X0 = 0; X0 < 3; X0++) {
             for (var Y0 = 0; Y0 < 3; Y0++) {
                 if (board[Y0][X0] == '-1') {
-                    board[Y0][X0] = 'X';
+                    board[Y0][X0] = 'O';
                     let score = minimax(false, depth + 1);
                     bestScore = Math.max(bestScore, score);
                     board[Y0][X0] = '-1';
@@ -110,7 +108,7 @@ function minimax(isMaximizing, depth) {
         for (var X0 = 0; X0 < 3; X0++) {
             for (var Y0 = 0; Y0 < 3; Y0++) {
                 if (board[Y0][X0] == '-1') {
-                    board[Y0][X0] = 'O';
+                    board[Y0][X0] = 'X';
                     let score = minimax(true, depth + 1);
                     bestScore = Math.min(bestScore, score);
                     board[Y0][X0] = '-1';
@@ -127,7 +125,7 @@ function findBestMove(player) {
     for (var Y0 = 1; Y0 <= 3; Y0++) {
         for (var X0 = 1; X0 <= 3; X0++) {
             if (board[Y0-1][X0-1] == '-1') {
-                board[Y0-1][X0-1] = 'X';
+                board[Y0-1][X0-1] = 'O';
                 let score = minimax(false, 0);
                 if (scores[score] == undefined)
                     scores[score] = [];
@@ -137,10 +135,10 @@ function findBestMove(player) {
             }
         }
     }
-    var maxScore = -Infinity;
+    var maxScore = Infinity;
     var bestMoves = [];
     for (var score in scores) {
-        if (score > maxScore) {
+        if (score < maxScore) {
             bestMoves = scores[score];
             maxScore = score;
         }
@@ -151,7 +149,7 @@ function findBestMove(player) {
     var Y0 = ID[3];
     var X0 = ID[4];
 
-    board[Y0- 1][X0 - 1] = 'X';
+    board[Y0- 1][X0 - 1] = 'O';
     var button = document.getElementById(ID);
     button.innerHTML = 'O';
     button.style.color="black";
