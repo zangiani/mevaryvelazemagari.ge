@@ -18,3 +18,38 @@
     font-size: 90px;
     color: white;
 }
+
+
+#newGame {
+    visibility: hidden;
+    position: absolute;
+    height: 150px;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+#newGameTxt {
+    font-size: 35px;
+}
+
+#newGameBtn {
+    position: absolute;
+    height: 50px;
+    width: 110px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    font-size: 28px;
+    border-radius: 10px;
+    border-width: 4px;
+}
+
+#resultMessage {
+    visibility: hidden;
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-size: 80px;
+}

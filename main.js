@@ -1,14 +1,19 @@
 
 const buttons = document.getElementsByTagName("button");
+const newGameBtn = document.getElementById("newGameBtn");
+var newGame = document.getElementById("newGame");
+var result = document.getElementById("resultMessage");
+
 for (let button of buttons) {
     button.addEventListener("click", doSmth);
 }
+newGameBtn.addEventListener("click", startNewGame);
 
 var board = [
     ['-1', '-1', '-1'],
     ['-1', '-1', '-1'],
     ['-1', '-1', '-1']
-]
+];
 
 function doSmth(e) {
     if (checkForWin() != 'NE') {
@@ -156,8 +161,31 @@ function findBestMove(player) {
 }
 
 function getMessage(player) {
-    if (player == "TIE")
-        console.log("TIE");
-    else
-        console.log(player, " HAS WON, CONGRATULATIONS");
+    if (player == "TIE") {
+        result.innerHTML = "verc iman verca shen";
+        result.style.color="purple";
+    } if (player == "X") {
+        result.innerHTML = "sagol lomo";
+        result.style.color="green";
+    } if (player == "O") {
+        result.innerHTML = "vai she sawyalo";
+        result.style.color="red";
+    }
+
+    result.style.visibility="visible";
+    newGame.style.visibility="visible";
+
+}
+
+function startNewGame() {
+    for (var Y0 = 1; Y0 <= 3; Y0++) {
+        for (var X0 = 1; X0 <= 3; X0++) {
+            var button = document.getElementById("btn" + Y0 + X0);
+            button.innerHTML = '-1';
+            button.style.color="white";
+            board[Y0 - 1][X0 - 1] = '-1';
+            newGame.style.visibility="hidden";
+            result.style.visibility="hidden";
+        }
+    }
 }
